@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # In-Memory Session Cache
+  redis:
+    image: redis:7-alpine
+    container_name: rac-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # FastAPI Backend & LangGraph Agent Gateway
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rac-backend
+    restart: unless-stopped
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-sk-placeholder-for-dev}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+      - RAZORPAY_KEY_ID=${RAZORPAY_KEY_ID:-rzp_test_RAC991204DEMO}
+      - RAZORPAY_KEY_SECRET=${RAZORPAY_KEY_SECRET:-RAC_SecretKey_991204_DemoMode}
+      - RAZORPAY_WEBHOOK_SECRET=${RAZORPAY_WEBHOOK_SECRET:-rac_webhook_secret_hmac_2026}
+      - REDIS_URL=redis://redis:6379/0
+      - BACKEND_URL=http://backend:8000
+      - STREAMLIT_URL=http://localhost:8501
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - sqlite_data:/app/data_persisted
+
+  # Streamlit Conversational Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rac-frontend
+    restart: unless-stopped
+    command: streamlit run ui/app.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    environment:
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend
+    volumes:
+      - .:/app
+
+volumes:
+  redis_data:
+  sqlite_data:

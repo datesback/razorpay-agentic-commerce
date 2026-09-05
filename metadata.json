@@ -1,0 +1,6 @@
+{
+  "name": "Razorpay RAC Engine",
+  "description": "Razorpay In-Chat Agentic Commerce Engine — LangGraph state machine, autonomous D2C checkout, Razorpay Smart Links, and HMAC webhook security.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

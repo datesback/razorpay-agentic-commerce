@@ -1,0 +1,25 @@
+# Core Framework & Server
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+pydantic-settings==2.7.1
+python-dotenv==1.0.1
+requests==2.32.3
+
+# Agent & LangGraph Ecosystem
+langgraph==0.2.60
+langchain==0.3.14
+langchain-core==0.3.29
+langchain-openai==0.3.0
+
+# Payments & Caching
+razorpay==1.4.1
+redis==5.2.1
+
+# Frontend Interface
+streamlit==1.41.1
+
+# Testing & Code Quality
+pytest==8.3.4
+pytest-asyncio==0.25.2
+httpx==0.28.1
